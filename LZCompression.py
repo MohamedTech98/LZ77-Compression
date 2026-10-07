@@ -97,5 +97,11 @@ class LZCompression:
 
 
     def compress(self):
-        # write your code here
-        pass
+        data=self.__orignalString
+        self.__tags=[]
+        pos=0
+        while pos < len(data):
+            bestposDIST,bestlength =self.findLongestMatch(pos)
+            nextChar=data[pos+bestlength]
+            self.__tags.append(Tag(bestposDIST,bestlength,nextChar))
+            pos+=(bestlength+1)
