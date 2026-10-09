@@ -7,20 +7,49 @@ class LZDecompression:
     def __init__(self,textCompressed):
         self.__textCompressed = textCompressed
         self.__tags = textCompressed.getCurrentTags()
+        if not self.__vaildTags():
+            raise ValueError("some error in tags,try again.")
+
 
     @classmethod
     def from_tags(cls,tags):
         obj = cls.__new__(cls)
         obj.__textCompressed = None
         obj.__tags = tags
+        if not obj.__vaildTags():
+            raise ValueError("some error in tags,try again.")
         return obj
 
+    def __vaildTags(self):
+        szWindowSearch = 0
+
+        for tag in self.__tags:
+            pos = tag.pos
+            lenght = tag.length
+            nextChar = tag.nextChar
+
+            if pos < 0 or lenght < 0:
+                return False
+
+            if lenght > 0 and pos == 0:
+                return False
+
+            if pos > 0 and lenght == 0:
+                return False
+
+            if pos > szWindowSearch:
+                return False
+
+            szWindowSearch += lenght + (1 if nextChar else 0)
+
+        return True
 
     def getTags(self):
         cnt = 1
         for tag in self.__tags:
             print(f"tag {cnt}:<pos = {tag.pos},len = {tag.length},nextChar = {tag.nextChar}>")
             cnt += 1
+
 
     def decompress(self):
         text = ''
